@@ -57,6 +57,18 @@ class Portainer:
         api_url = self._base_url + api
         headers = {"Authorization": f"Bearer {self._auth_token}"}
         return requests.get(api_url, headers = headers, json = params)
+    
+    async def runCommand(self, method : str, api : str, params : dict | None, autoLogin : bool | True):
+        self._debuglog("method: " + method + "api: " + api + "params: " + json.dumps(params))
+        if method == "POST":
+            response = await self.post(api, params)
+        elif method == "GET":
+            response = await self.get(api, params)
+        if response.status_code == 401 and autoLogin: # not authorized, retry login
+            if self.login():
+                response = await self.runCommand(method, api, params, False)
+        self._debuglog("Response status code: {}".format(response.status_code))
+        return response
 
     async def login(self) -> bool:
         """Create a logged session."""
@@ -89,9 +101,7 @@ class Portainer:
         if endpointIds is not None:
             params["endpointIds"] = endpointIds
 
-        self._debuglog("Getting endpoints, params: " + json.dumps(params))
-        response = await self.get(API_ENDPOINTS, params)
-        self._debuglog("Response status code: {}".format(response.status_code))
+        response = await self.runCommand("GET", API_ENDPOINTS, params)
         if response.status_code == 200:
             ret = []
             endpoints = json.loads(response.text)
@@ -100,5 +110,3 @@ class Portainer:
         else:
             data = json.loads(response.text)
             raise PortainerException(API_ENDPOINTS, response.status_code, data["message"], data["details"])
-
-    #async def getEndpoint(self) -> PortainerEndpoint | None :
