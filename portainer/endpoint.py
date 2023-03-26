@@ -20,19 +20,18 @@ class PortainerEndpoint():
     def __init__(self, portainer: Portainer, endpoint: dict) -> None:
         """Constructor method."""
         self._portainer = portainer
-        self._dockerContainer = {}
+        self._dockerContainer : list(PortainerDockerContainer) = {}
         self.afterRefresh(endpoint)
 
     async def refresh(self) -> None:
-        response = await self._portainer.runCommand(API_ENDPOINT)
+        api = API_ENDPOINT.format(self._id)
+        response = await self._portainer.runCommand("GET", api, None)
         if response.status_code == 200:
-            ret = []
-            endpoints = json.loads(response.text)
-            for endpoint in endpoints:
-                ret.append(PortainerEndpoint(self, endpoint))
+            endpoint = json.loads(response.text)
+            self.afterRefresh(endpoint)
         else:
             data = json.loads(response.text)
-            raise PortainerException(API_ENDPOINT, response.status_code, data["message"], data["details"])
+            raise PortainerException(api, response.status_code, data["message"], data["details"])
 
     def afterRefresh(self, endpoint : dict) -> None:
         self._id = endpoint["Id"]
@@ -42,6 +41,7 @@ class PortainerEndpoint():
         self._groupId = endpoint["GroupId"]
         self._publicURL = endpoint["PublicURL"]
         self._status = endpoint["Status"]
+        self._time = endpoint["QueryDate"]
         self.generateContainers(endpoint["Snapshots"][0]["DockerSnapshotRaw"]["Containers"])
 
     def generateContainers(self, containers : dict) -> None:

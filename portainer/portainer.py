@@ -58,7 +58,7 @@ class Portainer:
         headers = {"Authorization": f"Bearer {self._auth_token}"}
         return requests.get(api_url, headers = headers, json = params)
     
-    async def runCommand(self, method : str, api : str, params : dict | None, autoLogin : bool | True):
+    async def runCommand(self, method : str, api : str, params : dict | None, autoLogin = True):
         self._debuglog("method: " + method + "api: " + api + "params: " + json.dumps(params))
         if method == "POST":
             response = await self.post(api, params)
@@ -107,6 +107,8 @@ class Portainer:
             endpoints = json.loads(response.text)
             for endpoint in endpoints:
                 ret.append(PortainerEndpoint(self, endpoint))
+                
+            return ret
         else:
             data = json.loads(response.text)
             raise PortainerException(API_ENDPOINTS, response.status_code, data["message"], data["details"])

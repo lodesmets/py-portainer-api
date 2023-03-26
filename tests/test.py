@@ -9,7 +9,9 @@ try:
 except:
     print("Error")
 
-asyncio.run(portainer.getEndpoints())
-#try:
-#except:
-#    print("Error")
+endpoints = asyncio.run(portainer.getEndpoints())
+
+asyncio.run(endpoints[0].refresh())
+asyncio.run(endpoints[0]._dockerContainer['lode_grocy'].getImageStatus())
+asyncio.run(endpoints[0]._dockerContainer['lode_grocy'].getStats())
+asyncio.run(endpoints[0]._dockerContainer['lode_grocy'].recreate())
