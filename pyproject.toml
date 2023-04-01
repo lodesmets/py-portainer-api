@@ -5,3 +5,32 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "py-portainer-api"
 version = "0.0.1"
+description = "Python API for communication with Portainer"
+authors = [
+    {name="Lode Smets (lodesmets)"}
+]
+license = {text = "MIT"}
+readme = "README.md"
+keywords=["portainer"]
+dependencies  = ["requests"]
+requires-python = ">=3.8.0"
+
+[project.urls]
+Repository = "https://github.com/lodesmets/py-portainer-api"
+
+[tool.isort]
+profile = "black"
+src_paths = ["src", "tests"]
+
+[tool.pylint.MAIN]
+ignore = ["tests"]
+
+[tool.pylint."MESSAGES CONTROL"]
+disable = [
+    "too-few-public-methods",
+    "too-many-arguments",
+    "too-many-branches",
+    "too-many-instance-attributes",
+    "too-many-public-methods",
+    "too-many-return-statements",
+]

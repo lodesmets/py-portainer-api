@@ -1,20 +1,16 @@
 """Class to interact with Portainer."""
-import requests
-import logging
 import json
+import logging
+from typing import List, Union
+
+import requests
+
+from .const import API_AUTH, API_ENDPOINTS
 from .endpoint import PortainerEndpoint
-
-from .const import (
-    API_AUTH,
-    API_ENDPOINTS,
-)
-
-from typing import List, Any, TypedDict
-
-from .exceptions import (PortainerException)
-    
+from .exceptions import PortainerException
 
 _LOGGER = logging.getLogger(__name__)
+
 
 class Portainer:
     """Class containing the main Portainer functions."""
@@ -41,33 +37,40 @@ class Portainer:
             self._base_url = f"https://{portainer_ip}:{portainer_port}/api/"
         else:
             self._base_url = f"http://{portainer_ip}:{portainer_port}/api/"
-    
+
     def _debuglog(self, message: str) -> None:
         """Outputs message if debug mode is enabled."""
         _LOGGER.debug(message)
         if self._debugmode:
             print("DEBUG: " + message)
 
-    async def post(self, api : str, params : dict | None) :
+    async def post(self, api: str, params: dict | None):
+        """Handles API POST request."""
         api_url = self._base_url + api
         headers = {"Authorization": f"Bearer {self._auth_token}"}
-        return requests.post(api_url, headers = headers, json = params)
-    
-    async def get(self, api : str, params : dict | None) :
+        return requests.post(api_url, headers=headers, json=params, timeout=600)
+
+    async def get(self, api: str, params: dict | None):
+        """Handles API GET request."""
         api_url = self._base_url + api
         headers = {"Authorization": f"Bearer {self._auth_token}"}
-        return requests.get(api_url, headers = headers, json = params)
-    
-    async def runCommand(self, method : str, api : str, params : dict | None, autoLogin = True):
-        self._debuglog("method: " + method + "api: " + api + "params: " + json.dumps(params))
+        return requests.get(api_url, headers=headers, json=params, timeout=600)
+
+    async def run_command(
+        self, method: str, api: str, params: dict | None, auto_login=True
+    ):
+        """Run command."""
+        self._debuglog(
+            "method: " + method + "api: " + api + "params: " + json.dumps(params)
+        )
         if method == "POST":
             response = await self.post(api, params)
         elif method == "GET":
             response = await self.get(api, params)
-        if response.status_code == 401 and autoLogin: # not authorized, retry login
+        if response.status_code == 401 and auto_login:  # not authorized, retry login
             if self.login():
-                response = await self.runCommand(method, api, params, False)
-        self._debuglog("Response status code: {}".format(response.status_code))
+                response = await self.run_command(method, api, params, False)
+        self._debuglog(f"Response status code: {response.status_code}")
         return response
 
     async def login(self) -> bool:
@@ -82,33 +85,41 @@ class Portainer:
 
         # Request login
         response = await self.post(API_AUTH, params)
-        self._debuglog("Response status code: {}".format(response.status_code))
+        self._debuglog(f"Response status code: {response.status_code}")
         if response.status_code == 200:
             self._auth_token = response.json()["jwt"]
             return True
-        else:
-            data = json.loads(response.text)
-            raise PortainerException(API_AUTH, response.status_code, data["message"], data["details"])
+        data = json.loads(response.text)
+        raise PortainerException(
+            API_AUTH, response.status_code, data["message"], data["details"]
+        )
 
-    async def getEndpoints(self, start : int | None = None, limit : int| None = None, groupIds : List[int] | None = None, endpointIds : List[int] | None = None) -> List[PortainerEndpoint] | None :
-        params = {}
+    async def get_endpoints(
+        self,
+        start: int | None = None,
+        limit: int | None = None,
+        group_ids: List[int] | None = None,
+        endpoint_ids: List[int] | None = None,
+    ) -> List[PortainerEndpoint] | None:
+        """Get endpoints."""
+        params: dict[str, Union[int, list[int]]] = {}
         if start is not None:
             params["start"] = start
         if limit is not None:
             params["limit"] = limit
-        if groupIds is not None:
-            params["groupIds"] = groupIds
-        if endpointIds is not None:
-            params["endpointIds"] = endpointIds
+        if group_ids is not None:
+            params["groupIds"] = group_ids
+        if endpoint_ids is not None:
+            params["endpointIds"] = endpoint_ids
 
-        response = await self.runCommand("GET", API_ENDPOINTS, params)
+        response = await self.run_command("GET", API_ENDPOINTS, params)
         if response.status_code == 200:
             ret = []
             endpoints = json.loads(response.text)
             for endpoint in endpoints:
                 ret.append(PortainerEndpoint(self, endpoint))
-                
             return ret
-        else:
-            data = json.loads(response.text)
-            raise PortainerException(API_ENDPOINTS, response.status_code, data["message"], data["details"])
+        data = json.loads(response.text)
+        raise PortainerException(
+            API_ENDPOINTS, response.status_code, data["message"], data["details"]
+        )
