@@ -4,6 +4,7 @@ import logging
 from typing import List, Union
 
 import requests
+from requests import Response
 
 from .const import API_AUTH, API_ENDPOINTS
 from .endpoint import PortainerEndpoint
@@ -44,21 +45,21 @@ class Portainer:
         if self._debugmode:
             print("DEBUG: " + message)
 
-    async def post(self, api: str, params: dict | None):
+    async def post(self, api: str, params: dict | None) -> Response:
         """Handles API POST request."""
         api_url = self._base_url + api
         headers = {"Authorization": f"Bearer {self._auth_token}"}
         return requests.post(api_url, headers=headers, json=params, timeout=600)
 
-    async def get(self, api: str, params: dict | None):
+    async def get(self, api: str, params: dict | None) -> Response:
         """Handles API GET request."""
         api_url = self._base_url + api
         headers = {"Authorization": f"Bearer {self._auth_token}"}
         return requests.get(api_url, headers=headers, json=params, timeout=600)
 
     async def run_command(
-        self, method: str, api: str, params: dict | None, auto_login=True
-    ):
+        self, method: str, api: str, params: dict | None, auto_login : bool = True
+    ) -> Response:
         """Run command."""
         self._debuglog(
             "method: " + method + "api: " + api + "params: " + json.dumps(params)

@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import json
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from .const import (
     API_CONTAINER_RESTART,
@@ -30,7 +30,7 @@ class PortainerDockerContainer:
         self._image_status = ""
         self._id = ""
         self._status = ""
-        self._stats = None
+        self._stats : dict[Any, Any] = {}
         self.after_refresh(docker_container)
 
     def after_refresh(self, docker_container: dict) -> None:
@@ -49,6 +49,7 @@ class PortainerDockerContainer:
         response = await self._portainer.run_command("GET", api, None)
 
         if response.status_code == 200:
+            image_status = {}
             image_status = json.loads(response.text)
             self._image_status = image_status["Status"]
             return image_status
@@ -64,6 +65,7 @@ class PortainerDockerContainer:
         response = await self._portainer.run_command("GET", api, None)
 
         if response.status_code == 200:
+            stats = {}
             stats = json.loads(response.text)
             self._stats = stats
             return stats
@@ -73,13 +75,14 @@ class PortainerDockerContainer:
             api, response.status_code, data["message"], data["details"]
         )
 
-    async def recreate(self, pull_image=True) -> dict:
+    async def recreate(self, pull_image : bool = True) -> dict:
         """Recreate the container."""
         api = API_RECREATE.format(self._endpoint_id, self._id)
         param = {"PullImage": pull_image}
         response = await self._portainer.run_command("POST", api, param)
 
         if response.status_code == 200:
+            container = {}
             container = json.loads(response.text)
             self._id = container["Id"]
             self._status = container["State"]["Status"]
