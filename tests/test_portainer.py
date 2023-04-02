@@ -1,6 +1,7 @@
 """Portainer tests."""
 # pylint: disable=protected-access
 
+
 class TestPortainer:
     """Common portainer test cases."""
 
