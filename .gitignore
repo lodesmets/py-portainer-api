@@ -1,3 +1,4 @@
 py_portainer_api.egg-info/
 src/portainer/__pycache__
 tests/__pycache__
+venv

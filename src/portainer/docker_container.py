@@ -30,7 +30,7 @@ class PortainerDockerContainer:
         self._image_status = ""
         self._id = ""
         self._status = ""
-        self._stats : dict[Any, Any] = {}
+        self._stats: dict[Any, Any] = {}
         self.after_refresh(docker_container)
 
     def after_refresh(self, docker_container: dict) -> None:
@@ -75,7 +75,7 @@ class PortainerDockerContainer:
             api, response.status_code, data["message"], data["details"]
         )
 
-    async def recreate(self, pull_image : bool = True) -> dict:
+    async def recreate(self, pull_image: bool = True) -> dict:
         """Recreate the container."""
         api = API_RECREATE.format(self._endpoint_id, self._id)
         param = {"PullImage": pull_image}

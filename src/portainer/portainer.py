@@ -58,7 +58,7 @@ class Portainer:
         return requests.get(api_url, headers=headers, json=params, timeout=600)
 
     async def run_command(
-        self, method: str, api: str, params: dict | None, auto_login : bool = True
+        self, method: str, api: str, params: dict | None, auto_login: bool = True
     ) -> Response:
         """Run command."""
         self._debuglog(

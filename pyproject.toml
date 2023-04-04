@@ -12,7 +12,7 @@ authors = [
 license = {text = "MIT"}
 readme = "README.md"
 keywords=["portainer"]
-dependencies  = ["requests"]
+dependencies  = ["requests, types-requests"]
 requires-python = ">=3.10.0"
 
 [project.urls]
