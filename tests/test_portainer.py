@@ -5,5 +5,5 @@
 class TestPortainer:
     """Common portainer test cases."""
 
-    def test_init(self):
+    def test_init(self) -> None:
         """Test init."""

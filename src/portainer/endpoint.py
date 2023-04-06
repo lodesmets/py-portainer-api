@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import json
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict
 
 from .const import API_ENDPOINT
 from .docker_container import PortainerDockerContainer
@@ -18,12 +18,12 @@ class PortainerEndpoint:
     def __init__(self, portainer: Portainer, endpoint: dict) -> None:
         """Constructor method."""
         self._portainer = portainer
-        self._docker_container: list[PortainerDockerContainer]
+        self.docker_container: Dict[str, PortainerDockerContainer] = {}
         self.after_refresh(endpoint)
 
     async def refresh(self) -> None:
         """Refresh properties."""
-        api = API_ENDPOINT.format(self._id)
+        api = API_ENDPOINT.format(environment_id=self._id)
         response = await self._portainer.run_command("GET", api, None)
         if response.status_code == 200:
             endpoint = json.loads(response.text)
@@ -51,11 +51,11 @@ class PortainerEndpoint:
     def generate_containers(self, containers: dict) -> None:
         """Create or update container objects."""
         for container in containers:
-            if container["Names"][0][1:] in self._docker_container:
-                self._docker_container[container["Names"][0][1:]].afterRefresh(
+            if container["Names"][0][1:] in self.docker_container:
+                self.docker_container[container["Names"][0][1:]].after_refresh(
                     container
                 )
             else:
-                self._docker_container[
+                self.docker_container[
                     container["Names"][0][1:]
                 ] = PortainerDockerContainer(self._portainer, self._id, container)

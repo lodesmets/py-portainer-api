@@ -14,6 +14,6 @@ except PortainerException:
 endpoints = asyncio.run(portainer.get_endpoints())
 
 asyncio.run(endpoints[0].refresh())
-asyncio.run(endpoints[0]._docker_container["lode_grocy"].get_image_status())
-asyncio.run(endpoints[0]._docker_container["lode_grocy"].get_stats())
-asyncio.run(endpoints[0]._docker_container["lode_grocy"].recreate())
+asyncio.run(endpoints[0].docker_container["lode_grocy"].get_image_status())
+asyncio.run(endpoints[0].docker_container["lode_grocy"].get_stats())
+asyncio.run(endpoints[0].docker_container["lode_grocy"].recreate())
