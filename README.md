@@ -40,7 +40,7 @@ if endpoints is None:
     print("No endpoints found")
 else:
     asyncio.run(endpoints[0].refresh())
-    asyncio.run(endpoints[0].docker_container["lode_grocy"].get_image_status())
-    asyncio.run(endpoints[0].docker_container["lode_grocy"].get_stats())
-    asyncio.run(endpoints[0].docker_container["lode_grocy"].recreate())
+    asyncio.run(endpoints[0].docker_container["grocy"].get_image_status())
+    asyncio.run(endpoints[0].docker_container["grocy"].get_stats())
+    asyncio.run(endpoints[0].docker_container["grocy"].recreate())
 ```
