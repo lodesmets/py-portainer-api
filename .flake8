@@ -10,4 +10,4 @@ max-line-length = 80
 max-complexity = 10
 docstring-convention = google
 per-file-ignores =
-    tests/*:S101
+    tests/*:S101,D103

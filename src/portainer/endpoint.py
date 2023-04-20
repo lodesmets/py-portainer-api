@@ -1,7 +1,6 @@
 """Class to interact with Portainer endpoints."""
 from __future__ import annotations
 
-import json
 from typing import TYPE_CHECKING, Dict
 
 from .const import API_ENDPOINT
@@ -24,14 +23,15 @@ class PortainerEndpoint:
     async def refresh(self) -> None:
         """Refresh properties."""
         api = API_ENDPOINT.format(environment_id=self._id)
-        response = await self._portainer.run_command("GET", api, None)
-        if response.status_code == 200:
-            endpoint = json.loads(response.text)
-            self.after_refresh(endpoint)
+        response = await self._portainer.get(api, None)
+        if response["status_code"] == 200:
+            self.after_refresh(response["body"])
         else:
-            data = json.loads(response.text)
             raise PortainerException(
-                api, response.status_code, data["message"], data["details"]
+                api,
+                response["status_code"],
+                response["body"]["message"],
+                response["body"]["details"],
             )
 
     def after_refresh(self, endpoint: dict) -> None:

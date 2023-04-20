@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "py-portainer-api"
-version = "0.0.2"
+version = "0.0.1"
 description = "Python API for communication with Portainer"
 authors = [
     {name="Lode Smets (lodesmets)"}
@@ -12,7 +12,7 @@ authors = [
 license = {text = "MIT"}
 readme = "README.md"
 keywords=["portainer"]
-dependencies  = ["requests", "types-requests"]
+dependencies  = ["aiohttp"]
 requires-python = ">=3.10.0"
 
 [project.urls]
@@ -33,4 +33,5 @@ disable = [
     "too-many-instance-attributes",
     "too-many-public-methods",
     "too-many-return-statements",
+    "duplicate-code",
 ]
