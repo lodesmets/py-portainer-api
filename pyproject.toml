@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "py-portainer-api"
-version = "0.0.1"
+version = "0.0.3"
 description = "Python API for communication with Portainer"
 authors = [
     {name="Lode Smets (lodesmets)"}
