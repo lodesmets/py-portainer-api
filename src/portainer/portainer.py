@@ -15,6 +15,7 @@ from .const import API_AUTH, API_ENDPOINTS
 from .endpoint import PortainerEndpoint
 from .exceptions import (
     PortainerException,
+    PortainerInvalidCredentialsException,
     PortainerNotLoggedInException,
     PortainerRequestException,
 )
@@ -174,6 +175,9 @@ class Portainer:
         if response["status_code"] == 200:
             self._auth_token = response["body"]["jwt"]
             return True
+
+        if response["status_code"] == 422:
+            raise PortainerInvalidCredentialsException()
 
         if isinstance(response["body"], dict):
             raise PortainerException(

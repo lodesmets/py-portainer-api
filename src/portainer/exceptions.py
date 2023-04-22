@@ -29,6 +29,14 @@ class PortainerNotLoggedInException(PortainerException):
         super().__init__(None, -1, "Not logged in. You have to do login() first.", "")
 
 
+class PortainerInvalidCredentialsException(PortainerException):
+    """Invalid credentials exception."""
+
+    def __init__(self) -> None:
+        """Constructor method."""
+        super().__init__(None, -1, "Wrong credentials used.", "")
+
+
 class PortainerRequestException(PortainerException):
     """Request exception."""
 
