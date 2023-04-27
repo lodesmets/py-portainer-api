@@ -5,6 +5,8 @@ from typing import Final
 API_AUTH: Final = "auth"
 API_ENDPOINTS: Final = "endpoints"
 API_ENDPOINT: Final = "endpoints/{environment_id}"
+API_VERSION: Final = "system/version"
+API_STATUS: Final = "system/status"
 
 
 API_RECREATE: Final = "docker/{environment_id}/containers/{container_id}/recreate"

@@ -43,6 +43,7 @@ class PortainerEndpoint:
         self.group_id = endpoint["GroupId"]
         self.public_url = endpoint["PublicURL"]
         self.status = endpoint["Status"]
+        self.status_message = endpoint["StatusMessage"]
         self.time = endpoint["QueryDate"]
         self.generate_containers(
             endpoint["Snapshots"][0]["DockerSnapshotRaw"]["Containers"]

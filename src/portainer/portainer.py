@@ -11,7 +11,7 @@ import aiohttp
 import async_timeout
 from yarl import URL
 
-from .const import API_AUTH, API_ENDPOINTS
+from .const import API_AUTH, API_ENDPOINTS, API_STATUS, API_VERSION
 from .endpoint import PortainerEndpoint
 from .exceptions import (
     PortainerException,
@@ -38,6 +38,11 @@ class Portainer:
         debugmode: bool = False,
     ):
         """Constructor method."""
+        self.update_available = ""
+        self.latest_version = ""
+        self.version = ""
+        self.instance_id = ""
+
         self._username = username
         self._password = password
         self._debugmode = debugmode
@@ -137,11 +142,7 @@ class Portainer:
                         url, json=params, headers=headers
                     )
 
-            # mask sesitiv parameters
             response_url = response.url
-            # for param in SENSITIV_PARAMS:
-            #    if params is not None and params.get(param):
-            #        response_url = response_url.update_query({param: "*********"})
             self._debuglog("Request url: " + str(response_url))
             self._debuglog("Response status_code: " + str(response.status))
             self._debuglog("Response headers: " + str(dict(response.headers)))
@@ -187,6 +188,18 @@ class Portainer:
                 response["body"]["details"],
             )
         raise PortainerException(API_AUTH, response["status_code"], response["body"])
+
+    async def request_version(self) -> None:
+        """Request version info."""
+        response = await self.get(API_STATUS)
+        if response["status_code"] == 200:
+            self.version = response["body"]["Version"]
+            self.instance_id = response["body"]["InstanceID"]
+
+        response = await self.get(API_VERSION)
+        if response["status_code"] == 200:
+            self.update_available = response["body"]["UpdateAvailable"]
+            self.latest_version = response["body"]["LatestVersion"]
 
     async def get_endpoints(
         self,

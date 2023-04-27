@@ -38,9 +38,10 @@ class PortainerDockerContainer:
         self.name = docker_container["Names"][0][1:]
         self.image = docker_container["Image"]
         self.image_id = docker_container["ImageID"]
+        self.created = docker_container["Created"]
+        self.labels = docker_container["Labels"]
         self.state = docker_container["State"]
         self.status = docker_container["Status"]
-        self.created = docker_container["Created"]
 
     async def get_image_status(self) -> dict:
         """Request the status of the container."""
