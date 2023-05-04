@@ -11,7 +11,7 @@ import aiohttp
 import async_timeout
 from yarl import URL
 
-from .const import API_AUTH, API_ENDPOINTS, API_STATUS, API_VERSION
+from .const import API_AUTH, API_ENDPOINTS, API_LICENCES, API_STATUS, API_VERSION
 from .endpoint import PortainerEndpoint
 from .exceptions import (
     PortainerException,
@@ -42,6 +42,7 @@ class Portainer:
         self.latest_version = ""
         self.version = ""
         self.instance_id = ""
+        self.license: dict[str, str] = {}
 
         self._username = username
         self._password = password
@@ -200,6 +201,12 @@ class Portainer:
         if response["status_code"] == 200:
             self.update_available = response["body"]["UpdateAvailable"]
             self.latest_version = response["body"]["LatestVersion"]
+
+    async def request_license(self) -> None:
+        """Request license info."""
+        response = await self.get(API_LICENCES)
+        if response["status_code"] == 200:
+            self.license = response["body"][0]
 
     async def get_endpoints(
         self,

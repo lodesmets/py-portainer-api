@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any
 
 from .const import (
     API_CONTAINER_RESTART,
+    API_CONTAINER_SNAPSHOT,
     API_CONTAINER_START,
     API_CONTAINER_STOP,
     API_IMAGE_STATUS,
@@ -42,6 +43,23 @@ class PortainerDockerContainer:
         self.labels = docker_container["Labels"]
         self.state = docker_container["State"]
         self.status = docker_container["Status"]
+
+    async def refresh(self) -> None:
+        """Refreshes the properties."""
+        api = API_CONTAINER_SNAPSHOT.format(
+            environment_id=self._endpoint_id, container_id=self.container_id
+        )
+        response = await self._portainer.get(api, None)
+
+        if response["status_code"] == 200:
+            return self.after_refresh(response["body"])
+
+        raise PortainerException(
+            api,
+            response["status_code"],
+            response["body"]["message"],
+            response["body"]["details"],
+        )
 
     async def get_image_status(self) -> dict:
         """Request the status of the container."""

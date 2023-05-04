@@ -16,9 +16,10 @@ async def main():
 
 
 async def do(session: aiohttp.ClientSession):
-    portainer = Portainer(session, "192.168.0.100", 9000, "admin", "Password")
+    portainer = Portainer(session, "192.168.0.100", 9000, "admin", "Password!")
     try:
         await portainer.login()
+        await portainer.request_license()
     except PortainerException:
         print("Error")
         return
