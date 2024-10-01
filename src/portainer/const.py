@@ -8,6 +8,7 @@ API_ENDPOINT: Final = "endpoints/{environment_id}"
 API_VERSION: Final = "system/version"
 API_STATUS: Final = "system/status"
 API_LICENCES: Final = "licenses"
+API_SNAPSHOT: Final = "endpoints/snapshot"
 
 API_RECREATE: Final = "docker/{environment_id}/containers/{container_id}/recreate"
 API_IMAGE_STATUS: Final = (

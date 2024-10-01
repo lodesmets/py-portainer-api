@@ -11,7 +11,7 @@ import aiohttp
 import async_timeout
 from yarl import URL
 
-from .const import API_AUTH, API_ENDPOINTS, API_LICENCES, API_STATUS, API_VERSION
+from .const import API_AUTH, API_ENDPOINTS, API_LICENCES, API_STATUS, API_VERSION, API_SNAPSHOT
 from .endpoint import PortainerEndpoint
 from .exceptions import (
     PortainerException,
@@ -207,6 +207,10 @@ class Portainer:
         response = await self.get(API_LICENCES)
         if response["status_code"] == 200:
             self.license = response["body"][0]
+
+    async def take_snapshot(self) -> None:
+        """Take a snapshot."""
+        await self.post(API_SNAPSHOT)
 
     async def get_endpoints(
         self,
